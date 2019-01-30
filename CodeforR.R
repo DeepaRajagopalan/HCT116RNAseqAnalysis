@@ -1,7 +1,13 @@
+#istall
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("Rsubread", version = "3.8")
+
+# load rsubreads
 library(Rsubread)
 options(scipen=999)
 
-data<-featureCounts(c(
+data <- featureCounts(c(
 "/home/roberto/deepa/novogene/STAR/HCT116_siC_Aligned.sortedByCoord.out.bam",
 "/home/roberto/deepa/novogene/STAR/HCT116_siC_DMSO_Aligned.sortedByCoord.out.bam",
 "/home/roberto/deepa/novogene/STAR/HCT116_siC_JQ1_Aligned.sortedByCoord.out.bam",
@@ -18,13 +24,12 @@ isGTFAnnotationFile=TRUE,
 minMQS=10,
 strandSpecific=0,
 isPairedEnd=TRUE,
-#PE_orientation="rf",
 autosort=TRUE,
 nthreads=15,
 GTF.attrType="gene_name"
 )
 
-dat=data[[1]]
-colnames(dat)<-gsub("X.home.roberto.deepa.novogene.STAR.","",colnames(dat))
-colnames(dat)<-gsub("_Aligned.sortedByCoord.out.bam","",colnames(dat))
+dat=data[[1]] # extract only the matrix of counts
 saveRDS(dat,"novogene_counts.rds")
+#
+dataset = readRDS("novogene_counts.rds")
