@@ -1,7 +1,11 @@
-#istall
+#istall for R version 3.5
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("Rsubread", version = "3.8")
+
+#to install Rsubreads  for R3.3.3.1 use this
+source("https://bioconductor.org/biocLite.R")
+biocLite("Rsubread")
 
 # load rsubreads
 library(Rsubread)
