@@ -28,3 +28,11 @@ saveRDS(dat,"HCT116_counts.rds")
 dataset = readRDS("HCT116_counts.rds")
 #
 dat=data[[1]]  # extract only the matrix of counts
+
+# for the DEseq2 analysis
+# first install DESeq2 package)
+
+source("https://bioconductor.org/biocLite.R")
+biocLite("DESeq2")
+
+library(DESeq2)
