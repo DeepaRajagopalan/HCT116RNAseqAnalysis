@@ -40,3 +40,12 @@ source("https://bioconductor.org/biocLite.R")
 biocLite("DESeq2")
 
 library(DESeq2)
+designHCT116=data.frame(replicate=c("2","1","1","2"),condition=c("siControl","siControl","siTIP60","siTIP60"))
+dds=DESeqDataSetFromMatrix(countData=dataset, colData=designHCT116, design= ~replicate+condition)
+#next part is to run the actual differential analysis
+ddsgenes=DESeq(dds, test="LRT", full= ~replicate+condition, reduced= ~replicate)
+#to extract results in a way that makes sense
+dds_results=results(ddsgenes, contrast=c("condition", "siControl", "siTIP60"))
+write.csv(dds_results,"HCT_siC_vs_siK_allgenes")
+
+#to count the number of significantly expressed genes
