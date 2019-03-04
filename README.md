@@ -1,4 +1,4 @@
-# HCT116RNAseqAnalysis
+#HCT116RNAseqAnalysis
 
 Create genome directory first-
 To map, follow this
