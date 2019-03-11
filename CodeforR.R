@@ -53,7 +53,7 @@ dat=data[[1]]  # extract only the matrix of counts
 
 # for the DEseq2 analysis
 # first install DESeq2 package)
-
+#Don't run on computer R if DESeq is already installed
 source("https://bioconductor.org/biocLite.R")
 biocLite("DESeq2")
 
@@ -67,3 +67,45 @@ dds_results=results(ddsgenes, contrast=c("condition", "siControl", "siTIP60"))
 write.csv(dds_results,"HCT_siC_vs_siK_allgenes")
 
 #to count the number of significantly expressed genes
+
+#for PCA
+ddsgenes_vst <- varianceStabilizingTransformation(ddsgenes) #normalize by library size and transform to something like log 2 (taking into consideration base mean, penalizes genes that are lowly expressed)
+
+plotPCA(ddsgenes_vst,ntop=30000,intgroup=c("replicate","condition"))
+#tomake Volcano plot
+
+plot(dds_results$log2FoldChange,-log10(dds_results$padj),xlab="log2FoldChange",
+              ylab=expression('-Log'[10]*' p adjusted values'),col=alpha("grey",1),pch=20 )
+
+  abline(v=-1,lty = 2,col="grey")
+  abline(v=1,lty = 2,col="grey")
+  abline(h=-log10(0.05),lty = 2,col="grey")
+  points(dds_results$log2FoldChange[abs(dds_results$log2FoldChange)>1 & dds_results$padj<0.05],
+       -log10(dds_results$padj)[abs(dds_results$log2FoldChange)>1 & dds_results$padj<0.05],
+      col=alpha("red",1),pch=20)
+
+  legend("topright", paste("siC",":",length(which(dds_results$log2FoldChange>1 & dds_results$padj<0.05))), bty="n") 
+  legend("topleft", paste("siK",":",length(which(dds_results$log2FoldChange<(-1) & dds_results$padj<0.05))), bty="n") 
+
+#to highlight specific genes
+points(dds_results$log2FoldChange[which(rownames(dds_results)=="KAT5" | rownames(dds_results)=="IRF7")],
+       -log10(dds_results$padj)[which(rownames(dds_results)=="KAT5" | rownames(dds_results)=="IRF7")],
+      col=alpha("blue",1),pch=20)
+#to extract the location of desired genes from the rows
+which(rownames(dds_results)=="KAT5" | rownames(dds_results)=="IRF7")
+
+text(dds_results$log2FoldChange[which(rownames(dds_results)=="KAT5" | rownames(dds_results)=="IRF7")],
+       -log10(dds_results$padj)[which(rownames(dds_results)=="KAT5" | rownames(dds_results)=="IRF7")],
+     labels=rownames(dds_results)[which(rownames(dds_results)=="KAT5" | rownames(dds_results)=="IRF7")])
+#to extract the most different genes  and then plot
+which.max(dds_results$log2FoldChange) | which.min(dds_results$log2FoldChange)
+points(dds_results$log2FoldChange[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))],
+       -log10(dds_results$padj)[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))],
+      col=alpha("black",1),pch=20)
+
+text(dds_results$log2FoldChange[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))]+0.2, #to move the position of the label by 0.2 spaces.
+       -log10(dds_results$padj)[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))]+1,
+     labels=rownames(dds_results)[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))])
+
+
+
