@@ -73,6 +73,8 @@ ddsgenes_vst <- varianceStabilizingTransformation(ddsgenes) #normalize by librar
 
 plotPCA(ddsgenes_vst,ntop=30000,intgroup=c("replicate","condition"))
 #tomake Volcano plot
+library(gplots)
+library(ggplot2)
 
 plot(dds_results$log2FoldChange,-log10(dds_results$padj),xlab="log2FoldChange",
               ylab=expression('-Log'[10]*' p adjusted values'),col=alpha("grey",1),pch=20 )
@@ -107,5 +109,26 @@ text(dds_results$log2FoldChange[c(which.max(dds_results$log2FoldChange),which.mi
        -log10(dds_results$padj)[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))]+1,
      labels=rownames(dds_results)[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))])
 
+#to plot heatmaps
+
+install.packages("factoextra")
+install.packages("RColorBrewer")
+
+library(gplots)
+library(factoextra)
+library(RColorBrewer)
+
+dds_genes_heatmap=as.matrix(assay(ddsgenes_vst) [which(abs(dds_results$log2FoldChange)>1 & dds_results$padj<0.05),] )
+colnames(dds_genes_heatmap)=c("siC2","siC1","siT1","siT2")
+colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(20))
+heatmap.2(dds_genes_heatmap,col=colors,scale="row", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="Differentially expressed genes",key.title="Gene expression",cexCol=.8)
+
+interesting_gene =c("KAT5","SETDB1","IRF7","CDKN1A", "E2F1","RAD51","E2F2","FOXM1")
+
+interesting_genes_heatmap=assay(ddsgenes_vst)[rownames(dds_results) %in% interesting_gene,]
+colnames(interesting_genes_heatmap)=c("siC2","siC1","siT1","siT2")
+heatmap.2(interesting_genes_heatmap,col=colors,scale="row", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+xlab="", ylab="Differentially expressed genes",key.title="Gene expression",cexCol=.8)
 
 
