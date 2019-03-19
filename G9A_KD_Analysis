@@ -21,7 +21,7 @@ data <- featureCounts(c(
 "/home/deepa/G9A_Analysis/output/shB/B1Aligned.sortedByCoord.out.bam",
 "/home/deepa/G9A_Analysis/output/shB/B2Aligned.sortedByCoord.out.bam",
 "/home/deepa/G9A_Analysis/output/shD/D1Aligned.sortedByCoord.out.bam",
-"/home/deepa/nG9A_Analysis/output/shD/D2Aligned.sortedByCoord.out.bam"),
+"/home/deepa/G9A_Analysis/output/shD/D2Aligned.sortedByCoord.out.bam"),
 annot.ext="/home/deepa/Annotation/gencode.v27.annotation.gtf",
 isGTFAnnotationFile=TRUE,
 minMQS=10,
@@ -34,3 +34,17 @@ GTF.attrType="gene_name"
 
 dat=data[[1]] 
 saveRDS(dat,"G9A_Counts.rds")
+
+dataset = readRDS("G9A_Counts.rds")
+#DESeq2
+
+library(DESeq2)
+designG9A=data.frame(replicate=c("1","2","1","2","1","2"),condition=c("shControl","shControl","shG9A_B","shG9A_B","shG9A_D","shG9A_D"))
+dds=DESeqDataSetFromMatrix(countData=dataset, colData=designG9A, design= ~replicate+condition)
+#next part is to run the actual differential analysis
+ddsgenes=DESeq(dds, test="LRT", full= ~replicate+condition, reduced= ~replicate)
+#to extract results in a way that makes sense
+dds_results=results(ddsgenes, contrast=c("condition", "shControl", "shG9A_B"))
+dds_results2=results(ddsgenes, contrast=c("condition", "shControl", "shG9A_D"))
+write.csv(dds_results,"G9A_B_allgenes")
+write.csv(dds_results2,"G9A_D_allgenes")
