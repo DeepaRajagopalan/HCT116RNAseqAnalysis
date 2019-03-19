@@ -1,6 +1,7 @@
 #Mapping of Data
 
-/home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_2.fq.gz --readFilesCommand zcat --outFileNamePrefix /home/deepa/G9A_Analysis/output/shC/C1 --outSAMtype BAM SortedByCoordinate 
+/home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_2.fq.gz --readFilesCommand zcat 
+--outFileNamePrefix /home/deepa/G9A_Analysis/output/shC/C1 --outSAMtype BAM SortedByCoordinate 
 
 /home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAABRAAPEI-210_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAABRAAPEI-210_2.fq.gz --readFilesCommand zcat --outFileNamePrefix /home/deepa/G9A_Analysis/output/shC/C2 --outSAMtype BAM SortedByCoordinate 
 
