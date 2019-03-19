@@ -1,9 +1,8 @@
 #Mapping of Data
 
-/home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_2.fq.gz --readFilesCommand zcat 
---outFileNamePrefix /home/deepa/G9A_Analysis/output/shC/C1 --outSAMtype BAM SortedByCoordinate 
+/home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_2.fq.gz --readFilesCommand zcat --outFileNamePrefix /home/deepa/G9A_Analysis/output/shC/C1 --outSAMtype BAM SortedByCoordinate
 
-/home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAABRAAPEI-210_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAABRAAPEI-210_2.fq.gz --readFilesCommand zcat --outFileNamePrefix /home/deepa/G9A_Analysis/output/shC/C2 --outSAMtype BAM SortedByCoordinate 
+/home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAABRAAPEI-210_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAABRAAPEI-210_2.fq.gz --readFilesCommand zcat --outFileNamePrefix /home/deepa/G9A_Analysis/output/shC/C2 --outSAMtype BAM SortedByCoordinate
 
 /home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNK3WBBXX_L7_HKHUMkjvEAAERABPEI-213_1.fq.gz /home/deepa/G9A_Analysis/FCHNK3WBBXX_L7_HKHUMkjvEAAERABPEI-213_2.fq.gz --readFilesCommand zcat --outFileNamePrefix /home/deepa/G9A_Analysis/output/shB/B1 --outSAMtype BAM SortedByCoordinate 
 
@@ -12,3 +11,26 @@
 /home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAACRAAPEI-211_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAACRAAPEI-211_2.fq.gz --readFilesCommand zcat --outFileNamePrefix /home/deepa/G9A_Analysis/output/shD/D1 --outSAMtype BAM SortedByCoordinate 
 
 /home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAADRAAPEI-212_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAADRAAPEI-212_2.fq.gz --readFilesCommand zcat --outFileNamePrefix /home/deepa/G9A_Analysis/output/shD/D2 --outSAMtype BAM SortedByCoordinate 
+
+library(Rsubread)
+options(scipen=999)
+
+data <- featureCounts(c(
+"/home/deepa/G9A_Analysis/output/shC/C2Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shC/C1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shB/B1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shB/B2Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shD/D1Aligned.sortedByCoord.out.bam",
+"/home/deepa/nG9A_Analysis/output/shD/D2Aligned.sortedByCoord.out.bam"),
+annot.ext="/home/deepa/Annotation/gencode.v27.annotation.gtf",
+isGTFAnnotationFile=TRUE,
+minMQS=10,
+strandSpecific=0,
+isPairedEnd=TRUE,
+autosort=TRUE,
+nthreads=15,
+GTF.attrType="gene_name"
+)
+
+dat=data[[1]] 
+saveRDS(dat,"G9A_Counts.rds")
