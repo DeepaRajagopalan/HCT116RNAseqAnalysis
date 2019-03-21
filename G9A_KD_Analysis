@@ -141,3 +141,12 @@ plot(dds_results2$log2FoldChange,-log10(dds_results2$padj),xlab="log2FoldChange"
        -log10(dds_results2$padj)[c(which.max(dds_results2$log2FoldChange),which.min(dds_results2$log2FoldChange))]+1,
      labels=rownames(dds_results2)[c(which.max(dds_results2$log2FoldChange),which.min(dds_results2$log2FoldChange))])
 
+#to consider the shRNAs as replicates
+
+library(DESeq2)
+designG9A=data.frame(condition=c("shControl","shControl","shG9A","shG9A","shG9A","shG9A"))
+dds=DESeqDataSetFromMatrix(countData=dataset, colData=designG9A, design= ~condition)
+#next part is to run the actual differential analysis
+ddsgenes=DESeq(dds, test="Wald")
+#to extract results in a way that makes sense
+dds_results=results(ddsgenes, contrast=c("condition", "shControl", "shG9A"))
