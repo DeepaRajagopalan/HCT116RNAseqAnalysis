@@ -201,5 +201,25 @@ colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(20))
 heatmap.2(dds_genes_heatmap,col=colors,scale="row", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
 labRow = FALSE,xlab="", ylab="Differentially expressed genes",key.title="Gene expression",cexCol=.8)
 
-rownames(dds_results)[dds_results$log2FoldChange>1 & dds_results$padj<0.05]
-write.csv(rownames(dds_results)[dds_results$log2FoldChange>1 & dds_results$padj<0.05],"downregulated_genes_shG9A")
+Downregulated_genes<-rownames(dds_results)[which(dds_results$log2FoldChange>1 & dds_results$padj<0.05)]   #use which to avoid those columns that have NA in padj value. 
+
+write.table(Downregulated_genes,"downregulated_genes_shG9A.txt",quote=FALSE,sep="\t",col.names=FALSE,row.names=FALSE) # to avoid putting everything in quote, every gene name etc
+
+downregulated_genes_foldchange<-(dds_results)[which(dds_results$log2FoldChange>1 & dds_results$padj<0.05)] #R puts row name and colum
+
+#to plot pathway analysis
+reactome=read.csv("result.csv")
+head(reactome)
+#upload data on reactome, get the excel sheet which is called result.csv here from that website.
+
+pathway = reactome$Entities.FDR[which(reactome$Entities.FDR<0.05)]
+names(pathway) = reactome$Pathway.name[which(reactome$Entities.FDR<0.05)]
+barplot(pathway,las=2)
+barplot(-log10(pathway),las=2) #las 2 is rotate the labels to get it vertical
+barplot(-log10(pathway),las=2,ylim=c(0,6)) #ylim is to increase or change y axis lenghth, plot as log10 FDR values so that the significance is seen clearly
+barplot(-log10(pathway),las=2,ylim=c(0,6),ylab="-log10FDR",col="#b51336") #choose color on that R color pdf or r to hex
+
+barplot(-log10(pathway),las=2,ylim=c(0,6),ylab="-log10FDR",col="#b51336",horiz=TRUE)
+
+par(mar=c(5.1,15.1,4.1,2.1))
+barplot(-log10(pathway),las=2,xlim=c(0,5),xlab="-log10FDR",col="#b51336",horiz=TRUE,cex.names=.7)
