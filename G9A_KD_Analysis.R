@@ -205,7 +205,7 @@ Downregulated_genes<-rownames(dds_results)[which(dds_results$log2FoldChange>1 & 
 upregulated_genes<-rownames(dds_results)[which(dds_results$log2FoldChange<(-1) & dds_results$padj<0.05)] 
 write.table(Downregulated_genes,"downregulated_genes_shG9A.txt",quote=FALSE,sep="\t",col.names=FALSE,row.names=FALSE) # to avoid putting everything in quote, every gene name etc
 write.table(upregulated_genes,"upregulated_genes_shG9A.txt",quote=FALSE,sep="\t",col.names=FALSE,row.names=FALSE)
-downregulated_genes_foldchange<-(dds_results)[which(dds_results$log2FoldChange>1 & dds_results$padj<0.05)] #R puts row name and colum
+downregulated_genes_foldchange<-(dds_results)[which(dds_results$log2FoldChange>1 & dds_results$padj<0.05),] #R puts row name and colum
 
 #to plot pathway analysis
 reactome=read.csv("result.csv")
