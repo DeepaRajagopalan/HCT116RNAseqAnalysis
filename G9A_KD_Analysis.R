@@ -202,9 +202,9 @@ heatmap.2(dds_genes_heatmap,col=colors,scale="row", trace="none",distfun = funct
 labRow = FALSE,xlab="", ylab="Differentially expressed genes",key.title="Gene expression",cexCol=.8)
 
 Downregulated_genes<-rownames(dds_results)[which(dds_results$log2FoldChange>1 & dds_results$padj<0.05)]   #use which to avoid those columns that have NA in padj value. 
-
+upregulated_genes<-rownames(dds_results)[which(dds_results$log2FoldChange<(-1) & dds_results$padj<0.05)] 
 write.table(Downregulated_genes,"downregulated_genes_shG9A.txt",quote=FALSE,sep="\t",col.names=FALSE,row.names=FALSE) # to avoid putting everything in quote, every gene name etc
-
+write.table(upregulated_genes,"upregulated_genes_shG9A.txt",quote=FALSE,sep="\t",col.names=FALSE,row.names=FALSE)
 downregulated_genes_foldchange<-(dds_results)[which(dds_results$log2FoldChange>1 & dds_results$padj<0.05)] #R puts row name and colum
 
 #to plot pathway analysis
@@ -223,3 +223,13 @@ barplot(-log10(pathway),las=2,ylim=c(0,6),ylab="-log10FDR",col="#b51336",horiz=T
 
 par(mar=c(5.1,15.1,4.1,2.1))
 barplot(-log10(pathway),las=2,xlim=c(0,5),xlab="-log10FDR",col="#b51336",horiz=TRUE,cex.names=.7)
+abline(v=0)
+
+test_gene=ddsgenes_vst[rownames(ddsgenes_vst)=="EHMT2",]
+test_gene=assay(test_gene)
+colnames(test_gene)=c("C2","C1","B1","B2","D1","D2")
+barplot(test_gene)
+                      
+                      
+                      
+                      
