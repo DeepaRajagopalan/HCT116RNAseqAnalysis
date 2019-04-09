@@ -231,5 +231,24 @@ colnames(test_gene)=c("C2","C1","B1","B2","D1","D2")
 barplot(test_gene)
                       
                       
-                      
-                      
+#to plot some interesting genes
+
+#non-cannonical NFkB
+
+interesting_gene =c("EHMT2","MAP3K14","CHUK","RELB", "NFKBIA")
+
+interesting_genes_heatmap=assay(ddsgenes_vst)[rownames(dds_results) %in% interesting_gene,]
+colnames(interesting_genes_heatmap)=c("shC1","shC2","shG9A_B1","shG9A_B2","shG9A_D1","shG9A_D2")
+colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(20))
+heatmap.2(interesting_genes_heatmap,col=colors,scale="row", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+xlab="", ylab="Differentially expressed genes",key.title="Gene expression",cexCol=.8)
+
+interesting_genes_2 =c("EHMT2","NFKB1","IKBKB","RELA","REL","IKBKG")
+interesting_genes_heatmap2=assay(ddsgenes_vst)[rownames(dds_results) %in% interesting_genes_2,]
+colnames(interesting_genes_heatmap2)=c("shC1","shC2","shG9A_B1","shG9A_B2","shG9A_D1","shG9A_D2")
+colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(20))
+heatmap.2(interesting_genes_heatmap2,col=colors,scale="row", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+xlab="", ylab="Differentially expressed genes",key.title="Gene expression",cexCol=.8)
+
+
+
