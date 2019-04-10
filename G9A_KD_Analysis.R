@@ -235,7 +235,7 @@ barplot(test_gene)
 
 #non-cannonical NFkB
 
-interesting_gene =c("EHMT2","MAP3K14","CHUK","RELB", "NFKBIA")
+interesting_gene =c("EHMT2","MAP3K14","CHUK","RELB", "NFKBIA","NFKB2")
 
 interesting_genes_heatmap=assay(ddsgenes_vst)[rownames(dds_results) %in% interesting_gene,]
 colnames(interesting_genes_heatmap)=c("shC1","shC2","shG9A_B1","shG9A_B2","shG9A_D1","shG9A_D2")
