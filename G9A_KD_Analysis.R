@@ -251,4 +251,20 @@ heatmap.2(interesting_genes_heatmap2,col=colors,scale="row", trace="none",distfu
 xlab="", ylab="Differentially expressed genes",key.title="Gene expression",cexCol=.8)
 
 
+#to convert RNAseq to bw files
+#first get appropriate bam files
+/home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 20 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_2.fq.gz --readFilesCommand zcat --outFileNamePrefix /home/deepa/G9A_Analysis/output/shC/
+#samtools - get sorted, bam files from alignment output
+samtools view -bS Aligned.out.sam > Aligned.out.bam
+samtools sort Aligned.out.bam > sorted.bam
+samtools index -b sorted.bam
 
+/home/sb/programfiles/STAR/bin/Linux_x86_64/STAR --runThreadN 18 --genomeDir /home/deepa/newgenome/data/GRCh38/star_indices_overhang100 --readFilesIn /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_1.fq.gz /home/deepa/G9A_Analysis/FCHNVTNBBXX_L2_HKHUMkjvEAAARAAPEI-209_2.fq.gz --readFilesCommand zcat --outFileNamePrefix /home/deepa/G9A_Analysis/output/shC/C1 --outSAMtype BAM SortedByCoordinate
+
+
+/home/sb/programfiles/deepTools/bin/bamCoverage --bam /home/deepa/G9A_Analysis/output/shC/C1Aligned.sortedByCoord.out.bam --binSize 10 --normalizeTo1x 3088286401 -o /home/deepa/G9A_Analysis/output/shC/C1.bw
+/home/sb/programfiles/deepTools/bin/bamCoverage --bam /home/deepa/G9A_Analysis/output/shC/C1Aligned.sortedByCoord.out.bam --binSize 10 -o /home/deepa/G9A_Analysis/output/shC/C1.bw
+
+/home/sb/programfiles/deepTools/bin/bamCoverage --bam /home/sb/10A_CHIP/star_output/Me-24/me24_nodup_sorted.bam --binSize 10 --normalizeTo1x 3088286401 -o /home/sb/10A_CHIP/star_output/Me-24/me24.bw
+
+/home/sb/programfiles/deepTools/bin/bamCoverage --bam /home/deepa/G9A_Analysis/output/shC/C1Aligned.sortedByCoord.bam --binSize 10 -o /home/deepa/G9A_Analysis/output/shC/C1.bw
