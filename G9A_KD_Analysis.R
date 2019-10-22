@@ -268,3 +268,200 @@ samtools index -b sorted.bam
 /home/sb/programfiles/deepTools/bin/bamCoverage --bam /home/sb/10A_CHIP/star_output/Me-24/me24_nodup_sorted.bam --binSize 10 --normalizeTo1x 3088286401 -o /home/sb/10A_CHIP/star_output/Me-24/me24.bw
 
 /home/sb/programfiles/deepTools/bin/bamCoverage --bam /home/deepa/G9A_Analysis/output/shC/C1Aligned.sortedByCoord.bam --binSize 10 -o /home/deepa/G9A_Analysis/output/shC/C1.bw
+
+
+# to replot everything ignoring shB2
+
+library(Rsubread)
+options(scipen=999)
+
+data <- featureCounts(c(
+"/home/deepa/G9A_Analysis/output/shC/C2Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shC/C1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shB/B1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shD/D1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shD/D2Aligned.sortedByCoord.out.bam"),
+annot.ext="/home/deepa/Annotation/gencode.v27.annotation.gtf",
+isGTFAnnotationFile=TRUE,
+minMQS=10,
+strandSpecific=0,
+isPairedEnd=TRUE,
+autosort=TRUE,
+nthreads=15,
+GTF.attrType="gene_name"
+)
+
+dat=data[[1]] 
+saveRDS(dat,"G9A_Counts_without_shB2.rds")
+
+dataset = readRDS("G9A_Counts_without_shB2.rds")
+#to consider the shRNAs as replicates
+library(DESeq2)
+dataset = readRDS("G9A_Counts_without_shB2.rds")
+designG9A=data.frame(condition=c("shControl","shControl","shG9A","shG9A","shG9A"))
+dds=DESeqDataSetFromMatrix(countData=dataset, colData=designG9A, design= ~condition)
+#next part is to run the actual differential analysis
+ddsgenes=DESeq(dds, test="Wald")
+#to extract results in a way that makes sense
+dds_results=results(ddsgenes, contrast=c("condition", "shControl", "shG9A"))
+
+ddsgenes_vst <- varianceStabilizingTransformation(ddsgenes)
+plotPCA(ddsgenes_vst,ntop=30000,intgroup=c("condition"))
+
+interesting_gene =c("EHMT2","MAP3K14","CHUK","RELB", "NFKBIA","NFKB2", "RELA")
+interesting_genes_heatmap=assay(ddsgenes_vst)[rownames(dds_results) %in% interesting_gene,]
+colnames(interesting_genes_heatmap)=c("shC","shC","shG9A","shG9A","shG9A")
+colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(20))
+heatmap.2(interesting_genes_heatmap,col=colors,scale="row", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+xlab="", ylab="Differentially expressed genes",key.title="Gene expression",cexCol=.8)
+
+# to analyse shG9A_B alone
+
+library(Rsubread)
+options(scipen=999)
+
+data <- featureCounts(c(
+"/home/deepa/G9A_Analysis/output/shC/C2Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shC/C1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shB/B1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shB/B2Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shD/D1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shD/D2Aligned.sortedByCoord.out.bam"),
+annot.ext="/home/deepa/Annotation/gencode.v27.annotation.gtf",
+isGTFAnnotationFile=TRUE,
+minMQS=10,
+strandSpecific=0,
+isPairedEnd=TRUE,
+autosort=TRUE,
+nthreads=15,
+GTF.attrType="gene_name"
+)
+
+dat=data[[1]] 
+saveRDS(dat,"G9A_Counts.rds")
+
+dataset = readRDS("G9A_Counts.rds")
+
+# to analyse shG9A_B alone
+
+library(Rsubread)
+options(scipen=999)
+
+data <- featureCounts(c(
+"/home/deepa/G9A_Analysis/output/shC/C2Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shC/C1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shB/B1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shB/B2Aligned.sortedByCoord.out.bam"),
+annot.ext="/home/deepa/Annotation/gencode.v27.annotation.gtf",
+isGTFAnnotationFile=TRUE,
+minMQS=10,
+strandSpecific=0,
+isPairedEnd=TRUE,
+autosort=TRUE,
+nthreads=15,
+GTF.attrType="gene_name"
+)
+
+dat=data[[1]] 
+saveRDS(dat,"G9A_Counts_shBalone.rds")
+
+dataset = readRDS("G9A_Counts_shBalone.rds")
+
+library(DESeq2)
+designG9A=data.frame(replicate=c("1","2","1","2"),condition=c("shControl","shControl","shG9A_B","shG9A_B"))
+dds=DESeqDataSetFromMatrix(countData=dataset, colData=designG9A, design= ~replicate+condition)
+#next part is to run the actual differential analysis
+ddsgenes=DESeq(dds, test="LRT", full= ~replicate+condition, reduced= ~replicate)
+#to extract results in a way that makes sense
+dds_results=results(ddsgenes, contrast=c("condition", "shControl", "shG9A_B"))
+ddsgenes_vst <- varianceStabilizingTransformation(ddsgenes)
+
+
+interesting_gene =c("EHMT2","MAP3K14","CHUK","RELB", "NFKBIA","NFKB2", "RELA")
+interesting_genes_heatmap=assay(ddsgenes_vst)[rownames(dds_results) %in% interesting_gene,]
+colnames(interesting_genes_heatmap)=c("shC","shC","shG9A_B","shG9A_B")
+colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(20))
+heatmap.2(interesting_genes_heatmap,col=colors,scale="row", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+xlab="", ylab="Differentially expressed genes",key.title="Gene expression",cexCol=.8)
+
+#volcano plot
+
+library(gplots)
+library(ggplot2)
+
+plot(dds_results$log2FoldChange,-log10(dds_results$padj),xlab="log2FoldChange",
+              ylab=expression('-Log'[10]*' p adjusted values'),col=alpha("grey",1),pch=20 )
+
+  abline(v=-1,lty = 2,col="grey")
+  abline(v=1,lty = 2,col="grey")
+  abline(h=-log10(0.05),lty = 2,col="grey")
+  points(dds_results$log2FoldChange[abs(dds_results$log2FoldChange)>1 & dds_results$padj<0.05],
+       -log10(dds_results$padj)[abs(dds_results$log2FoldChange)>1 & dds_results$padj<0.05],
+      col=alpha("red",1),pch=20)
+      
+ points(dds_results$log2FoldChange[which(rownames(dds_results)=="EHMT2" | rownames(dds_results)=="RELB")],
+       -log10(dds_results$padj)[which(rownames(dds_results)=="EHMT2" | rownames(dds_results)=="RELB")],
+      col=alpha("blue",1),pch=20)
+      
+      text(dds_results$log2FoldChange[which(rownames(dds_results)=="EHMT2" | rownames(dds_results)=="RELB")],
+       -log10(dds_results$padj)[which(rownames(dds_results)=="EHMT2" | rownames(dds_results)=="RELB")],
+     labels=rownames(dds_results)[which(rownames(dds_results)=="EHMT2" | rownames(dds_results)=="RELB")])
+
+  legend("topright", paste("shC",":",length(which(dds_results$log2FoldChange>1 & dds_results$padj<0.05))), bty="n") 
+  legend("topleft", paste("shG9A_B",":",length(which(dds_results$log2FoldChange<(-1) & dds_results$padj<0.05))), bty="n")
+  
+points(dds_results$log2FoldChange[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))],
+       -log10(dds_results$padj)[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))],
+      col=alpha("black",1),pch=20)
+
+text(dds_results$log2FoldChange[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))]+0.5, #to move the position of the label by 0.2 spaces.
+       -log10(dds_results$padj)[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))]+1,
+     labels=rownames(dds_results)[c(which.max(dds_results$log2FoldChange),which.min(dds_results$log2FoldChange))])
+
+
+
+# to analyse shG9A_D alone
+
+library(Rsubread)
+options(scipen=999)
+
+data <- featureCounts(c(
+"/home/deepa/G9A_Analysis/output/shC/C2Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shC/C1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shD/D1Aligned.sortedByCoord.out.bam",
+"/home/deepa/G9A_Analysis/output/shD/D2Aligned.sortedByCoord.out.bam"),
+annot.ext="/home/deepa/Annotation/gencode.v27.annotation.gtf",
+isGTFAnnotationFile=TRUE,
+minMQS=10,
+strandSpecific=0,
+isPairedEnd=TRUE,
+autosort=TRUE,
+nthreads=15,
+GTF.attrType="gene_name"
+)
+
+dat=data[[1]] 
+saveRDS(dat,"G9A_Counts_shDalone.rds")
+
+dataset = readRDS("G9A_Counts_shDalone.rds")
+
+
+library(DESeq2)
+designG9A=data.frame(replicate=c("1","2","1","2"),condition=c("shControl","shControl","shG9A_D","shG9A_D"))
+dds=DESeqDataSetFromMatrix(countData=dataset, colData=designG9A, design= ~replicate+condition)
+#next part is to run the actual differential analysis
+ddsgenes=DESeq(dds, test="LRT", full= ~replicate+condition, reduced= ~replicate)
+#to extract results in a way that makes sense
+dds_results=results(ddsgenes, contrast=c("condition", "shControl", "shG9A_D"))
+ddsgenes_vst <- varianceStabilizingTransformation(ddsgenes)
+
+
+interesting_gene =c("EHMT2","MAP3K14","CHUK","RELB", "NFKBIA","NFKB2", "RELA")
+interesting_genes_heatmap=assay(ddsgenes_vst)[rownames(dds_results) %in% interesting_gene,]
+colnames(interesting_genes_heatmap)=c("shC","shC","shG9A_D","shG9A_D")
+colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(20))
+heatmap.2(interesting_genes_heatmap,col=colors,scale="row", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+xlab="", ylab="Differentially expressed genes",key.title="Gene expression",cexCol=.8)
+
+
+
